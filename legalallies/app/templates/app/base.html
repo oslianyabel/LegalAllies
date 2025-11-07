@@ -98,10 +98,18 @@
             border: none;
             cursor: pointer;
             font-size: 1rem;
+            display: inline-flex;
+            align-items: center;
         }
 
         .navbar-links a:hover, .navbar-links button:hover {
             text-decoration: underline;
+        }
+
+        .profile-icon {
+            width: 24px;
+            height: 24px;
+            stroke: currentColor;
         }
 
         .language-selector {
@@ -211,6 +219,202 @@
             width: 30px;
             height: 30px;
             object-fit: contain;
+        }
+
+        /* Chatbot Button */
+        .chatbot-btn {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background-color: var(--white);
+            box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: transform 0.3s, box-shadow 0.3s;
+            border: 2px solid var(--primary-color);
+            font-size: 1.5rem;
+        }
+
+        .chatbot-btn:hover {
+            transform: scale(1.1);
+            box-shadow: 0 4px 15px rgba(106, 30, 170, 0.4);
+        }
+
+        /* Chat Window */
+        .chat-window {
+            position: fixed;
+            right: -400px;
+            top: 70px;
+            width: 400px;
+            height: calc(100vh - 70px);
+            background: white;
+            box-shadow: -4px 0 20px rgba(0,0,0,0.15);
+            transition: right 0.3s ease;
+            z-index: 1000;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .chat-window.open {
+            right: 0;
+        }
+
+        .chat-header {
+            background: linear-gradient(135deg, var(--primary-color), #8b3abf);
+            color: white;
+            padding: 1.5rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .chat-header h3 {
+            margin: 0;
+            font-size: 1.2rem;
+        }
+
+        .chat-close {
+            background: none;
+            border: none;
+            color: white;
+            font-size: 1.5rem;
+            cursor: pointer;
+            padding: 0;
+            width: 30px;
+            height: 30px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            transition: background 0.3s;
+        }
+
+        .chat-close:hover {
+            background: rgba(255, 255, 255, 0.2);
+        }
+
+        .chat-messages {
+            flex: 1;
+            overflow-y: auto;
+            padding: 1.5rem;
+            background: #f8f9fa;
+        }
+
+        .chat-message {
+            margin-bottom: 1rem;
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .chat-message.user {
+            flex-direction: row-reverse;
+        }
+
+        .message-bubble {
+            max-width: 75%;
+            padding: 0.75rem 1rem;
+            border-radius: 12px;
+            word-wrap: break-word;
+        }
+
+        .chat-message.bot .message-bubble {
+            background: white;
+            color: var(--text-gray);
+            border: 1px solid #e0e0e0;
+        }
+
+        .chat-message.user .message-bubble {
+            background: var(--primary-color);
+            color: white;
+        }
+
+        .chat-input-container {
+            padding: 1rem;
+            background: white;
+            border-top: 1px solid #e0e0e0;
+        }
+
+        .chat-input-form {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .chat-input {
+            flex: 1;
+            padding: 0.75rem;
+            border: 2px solid #e0e0e0;
+            border-radius: 20px;
+            font-size: 0.95rem;
+            outline: none;
+        }
+
+        .chat-input:focus {
+            border-color: var(--primary-color);
+        }
+
+        .chat-send-btn {
+            background: var(--primary-color);
+            color: white;
+            border: none;
+            padding: 0.75rem 1.5rem;
+            border-radius: 20px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: opacity 0.3s;
+        }
+
+        .chat-send-btn:hover {
+            opacity: 0.9;
+        }
+
+        .chat-send-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .typing-indicator {
+            display: none;
+            padding: 0.75rem 1rem;
+            background: white;
+            border-radius: 12px;
+            border: 1px solid #e0e0e0;
+            max-width: 75%;
+        }
+
+        .typing-indicator.show {
+            display: block;
+        }
+
+        .typing-dots {
+            display: flex;
+            gap: 4px;
+        }
+
+        .typing-dots span {
+            width: 8px;
+            height: 8px;
+            background: var(--primary-color);
+            border-radius: 50%;
+            animation: typing 1.4s infinite;
+        }
+
+        .typing-dots span:nth-child(2) {
+            animation-delay: 0.2s;
+        }
+
+        .typing-dots span:nth-child(3) {
+            animation-delay: 0.4s;
+        }
+
+        @keyframes typing {
+            0%, 60%, 100% {
+                transform: translateY(0);
+            }
+            30% {
+                transform: translateY(-10px);
+            }
         }
 
         /* Footer */
@@ -466,7 +670,11 @@
             <!-- Auth Links -->
             <div class="navbar-links">
                 {% if user.is_authenticated %}
-                    <a href="{% url 'app:profile' %}">{% trans 'Perfil' %}</a>
+                    <a href="{% url 'app:profile' %}" title="{% trans 'Perfil' %}">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="profile-icon">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 6a3.75 3.75 0 1 1-7.5 0 3.75 3.75 0 0 1 7.5 0ZM4.501 20.118a7.5 7.5 0 0 1 14.998 0A17.933 17.933 0 0 1 12 21.75c-2.676 0-5.216-.584-7.499-1.632Z" />
+                        </svg>
+                    </a>
                     <a href="{% url 'app:logout' %}">{% trans 'Cerrar Sesión' %}</a>
                 {% else %}
                     <a href="{% url 'app:login' %}">{% trans 'Iniciar Sesión' %}</a>
@@ -501,6 +709,49 @@
             <img src="{{ network.image.url }}" alt="{{ network.name }}">
         </a>
         {% endfor %}
+        
+        <!-- Chatbot Button -->
+        <button class="chatbot-btn" onclick="toggleChat()" title="{% trans 'Asistente Virtual' %}">
+            🤖
+        </button>
+    </div>
+
+    <!-- Chat Window -->
+    <div class="chat-window" id="chatWindow">
+        <div class="chat-header">
+            <h3>🤖 {% trans 'Asistente Legal' %}</h3>
+            <button class="chat-close" onclick="toggleChat()">×</button>
+        </div>
+        
+        <div class="chat-messages" id="chatMessages">
+            <div class="chat-message bot">
+                <div class="message-bubble">
+                    {% trans '¡Hola! Soy tu asistente legal virtual. ¿En qué puedo ayudarte hoy?' %}
+                </div>
+            </div>
+            <div class="typing-indicator" id="typingIndicator">
+                <div class="typing-dots">
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                </div>
+            </div>
+        </div>
+        
+        <div class="chat-input-container">
+            <form class="chat-input-form" onsubmit="sendMessage(event)">
+                <input 
+                    type="text" 
+                    class="chat-input" 
+                    id="chatInput" 
+                    placeholder="{% trans 'Escribe tu pregunta...' %}" 
+                    autocomplete="off"
+                    required>
+                <button type="submit" class="chat-send-btn" id="sendBtn">
+                    {% trans 'Enviar' %}
+                </button>
+            </form>
+        </div>
     </div>
 
     <!-- Footer -->
@@ -562,6 +813,61 @@
                 dropdown.classList.remove('show');
             }
         });
+
+        // Chat functionality
+        function toggleChat() {
+            const chatWindow = document.getElementById('chatWindow');
+            chatWindow.classList.toggle('open');
+        }
+
+        function sendMessage(event) {
+            event.preventDefault();
+            
+            const input = document.getElementById('chatInput');
+            const message = input.value.trim();
+            
+            if (!message) return;
+            
+            // Add user message to chat
+            addMessage(message, 'user');
+            input.value = '';
+            
+            // Show typing indicator
+            const typingIndicator = document.getElementById('typingIndicator');
+            typingIndicator.classList.add('show');
+            
+            // Disable send button
+            const sendBtn = document.getElementById('sendBtn');
+            sendBtn.disabled = true;
+            
+            // Simulate AI response (replace with actual API call)
+            setTimeout(() => {
+                typingIndicator.classList.remove('show');
+                sendBtn.disabled = false;
+                
+                // Example response - replace with actual AI integration
+                const response = 'Gracias por tu consulta. Este es un chatbot de ejemplo. Para integrarlo con IA real, necesitarás conectarlo con un servicio como OpenAI, Anthropic, o similar.';
+                addMessage(response, 'bot');
+            }, 2000);
+        }
+
+        function addMessage(text, sender) {
+            const messagesContainer = document.getElementById('chatMessages');
+            const typingIndicator = document.getElementById('typingIndicator');
+            
+            const messageDiv = document.createElement('div');
+            messageDiv.className = `chat-message ${sender}`;
+            
+            const bubbleDiv = document.createElement('div');
+            bubbleDiv.className = 'message-bubble';
+            bubbleDiv.textContent = text;
+            
+            messageDiv.appendChild(bubbleDiv);
+            messagesContainer.insertBefore(messageDiv, typingIndicator);
+            
+            // Scroll to bottom
+            messagesContainer.scrollTop = messagesContainer.scrollHeight;
+        }
     </script>
 </body>
 </html>
