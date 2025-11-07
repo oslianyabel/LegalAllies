@@ -1,0 +1,567 @@
+{% load i18n static %}
+<!DOCTYPE html>
+<html lang="{% get_current_language as LANGUAGE_CODE %}{{ LANGUAGE_CODE }}">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Legal Allies{% endblock %}</title>
+    <link rel="icon" type="image/png" href="{% static 'img/favicon.png' %}">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary-color: #6a1eaa;
+            --white: #ffffff;
+            --light-gray: #f5f5f5;
+            --text-gray: #333;
+            --border-gray: #ddd;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            color: var(--text-gray);
+            padding-top: 70px;
+            background-color: var(--white);
+        }
+
+        /* Navbar */
+        .navbar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            background-color: var(--primary-color);
+            color: var(--white);
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            z-index: 1000;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+
+        .navbar-brand {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: var(--white);
+            text-decoration: none;
+        }
+
+        .navbar-content {
+            display: flex;
+            gap: 2rem;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+        .navbar-search {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .navbar-search input {
+            padding: 0.5rem;
+            border: none;
+            border-radius: 4px;
+            min-width: 200px;
+        }
+
+        .navbar-search button {
+            padding: 0.5rem 1rem;
+            background-color: var(--white);
+            color: var(--primary-color);
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+
+        .navbar-search button:hover {
+            opacity: 0.9;
+        }
+
+        .navbar-links {
+            display: flex;
+            gap: 1.5rem;
+            align-items: center;
+        }
+
+        .navbar-links a, .navbar-links button {
+            color: var(--white);
+            text-decoration: none;
+            font-weight: 500;
+            background: none;
+            border: none;
+            cursor: pointer;
+            font-size: 1rem;
+        }
+
+        .navbar-links a:hover, .navbar-links button:hover {
+            text-decoration: underline;
+        }
+
+        .language-selector {
+            position: relative;
+        }
+
+        .language-dropdown-btn {
+            background: none;
+            border: 1px solid var(--white);
+            color: var(--white);
+            padding: 0.5rem 1rem;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .language-dropdown-btn:hover {
+            background-color: rgba(255, 255, 255, 0.2);
+        }
+
+        .language-dropdown-menu {
+            display: none;
+            position: absolute;
+            top: 100%;
+            right: 0;
+            margin-top: 0.5rem;
+            background-color: var(--white);
+            border-radius: 4px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            min-width: 200px;
+            max-height: 400px;
+            overflow-y: auto;
+            z-index: 1001;
+        }
+
+        .language-dropdown-menu.show {
+            display: block;
+        }
+
+        .language-dropdown-menu form {
+            margin: 0;
+        }
+
+        .language-option {
+            width: 100%;
+            padding: 0.75rem 1rem;
+            border: none;
+            background: none;
+            text-align: left;
+            cursor: pointer;
+            color: var(--text-gray);
+            font-size: 0.95rem;
+            transition: background-color 0.2s;
+        }
+
+        .language-option:hover {
+            background-color: var(--light-gray);
+        }
+
+        /* Main Layout */
+        .main-container {
+            display: flex;
+            min-height: calc(100vh - 70px);
+        }
+
+        .content-wrapper {
+            flex: 1;
+            padding: 2rem;
+            max-width: 100%;
+        }
+
+        /* Floating Social Buttons */
+        .social-floating {
+            position: fixed;
+            right: 20px;
+            top: 50%;
+            transform: translateY(-50%);
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+            z-index: 999;
+        }
+
+        .social-floating-btn {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background-color: var(--white);
+            box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-decoration: none;
+            transition: transform 0.3s, box-shadow 0.3s;
+            border: 2px solid var(--primary-color);
+        }
+
+        .social-floating-btn:hover {
+            transform: scale(1.1);
+            box-shadow: 0 4px 15px rgba(106, 30, 170, 0.4);
+        }
+
+        .social-floating-btn img {
+            width: 30px;
+            height: 30px;
+            object-fit: contain;
+        }
+
+        /* Footer */
+        .footer {
+            background-color: var(--primary-color);
+            color: var(--white);
+            padding: 3rem 2rem 1rem;
+        }
+
+        .footer-content {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            max-width: 1200px;
+            margin: 0 auto 2rem;
+        }
+
+        .footer-section h4 {
+            margin-bottom: 1rem;
+            font-size: 1.2rem;
+        }
+
+        .footer-section p {
+            margin-bottom: 0.5rem;
+        }
+
+        .footer-section a {
+            color: var(--white);
+            text-decoration: none;
+        }
+
+        .footer-section a:hover {
+            text-decoration: underline;
+        }
+
+        .contact-form {
+            display: flex;
+            flex-direction: column;
+            gap: 0.8rem;
+        }
+
+        .contact-form input,
+        .contact-form textarea {
+            padding: 0.6rem;
+            border: none;
+            border-radius: 4px;
+            font-family: inherit;
+        }
+
+        .contact-form button {
+            padding: 0.8rem;
+            background-color: var(--white);
+            color: var(--primary-color);
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .contact-form button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(255, 255, 255, 0.3);
+        }
+
+        .contact-form button:active {
+            transform: translateY(0);
+        }
+
+        .footer-copyright {
+            text-align: center;
+            padding-top: 2rem;
+            border-top: 1px solid rgba(255, 255, 255, 0.3);
+            font-size: 0.9rem;
+        }
+
+        /* Messages */
+        .messages {
+            position: fixed;
+            top: 80px;
+            right: 20px;
+            z-index: 1001;
+            max-width: 400px;
+        }
+
+        .message {
+            padding: 1rem;
+            margin-bottom: 0.5rem;
+            border-radius: 4px;
+            background-color: var(--white);
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+        }
+
+        .message.success {
+            border-left: 4px solid #28a745;
+        }
+
+        .message.error {
+            border-left: 4px solid #dc3545;
+        }
+
+        .message.info {
+            border-left: 4px solid #17a2b8;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .social-floating {
+                right: 10px;
+                gap: 0.5rem;
+            }
+
+            .social-floating-btn {
+                width: 45px;
+                height: 45px;
+            }
+
+            .social-floating-btn img {
+                width: 25px;
+                height: 25px;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .navbar {
+                flex-direction: column;
+                padding: 1rem;
+                gap: 1rem;
+            }
+
+            .navbar-content {
+                flex-direction: column;
+                width: 100%;
+            }
+
+            .navbar-search input {
+                width: 100%;
+                min-width: 0;
+            }
+
+            .navbar-links {
+                flex-wrap: wrap;
+                justify-content: center;
+            }
+
+            .content-wrapper {
+                padding: 1rem;
+            }
+
+            .footer-content {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+    {% block extra_css %}{% endblock %}
+</head>
+<body>
+    <!-- Navbar -->
+    <nav class="navbar">
+        <a href="{% url 'app:index' %}" class="navbar-brand">
+            {% if home_config and home_config.logo %}
+                <img src="{{ home_config.logo.url }}" alt="Logo" style="height: 40px;">
+            {% else %}
+                Legal Allies
+            {% endif %}
+        </a>
+        
+        <div class="navbar-content">
+            <!-- Search -->
+            <form method="GET" action="{% url 'app:index' %}" class="navbar-search">
+                <input type="text" name="search" placeholder="{% trans 'Buscar artículos...' %}" value="{{ request.GET.search }}">
+                <button type="submit">{% trans 'Buscar' %}</button>
+            </form>
+
+            <!-- Language Selector -->
+            <div class="language-selector">
+                <button class="language-dropdown-btn" onclick="toggleLanguageDropdown()">
+                    <span>🌐</span>
+                    <span>{% trans 'Idioma' %}</span>
+                    <span>▼</span>
+                </button>
+                <div class="language-dropdown-menu" id="languageDropdown">
+                    <form action="{% url 'set_language' %}" method="post">
+                        {% csrf_token %}
+                        <input name="next" type="hidden" value="{{ request.path }}">
+                        <button type="submit" name="language" value="es" class="language-option">Español</button>
+                    </form>
+                    <form action="{% url 'set_language' %}" method="post">
+                        {% csrf_token %}
+                        <input name="next" type="hidden" value="{{ request.path }}">
+                        <button type="submit" name="language" value="en" class="language-option">English</button>
+                    </form>
+                    <form action="{% url 'set_language' %}" method="post">
+                        {% csrf_token %}
+                        <input name="next" type="hidden" value="{{ request.path }}">
+                        <button type="submit" name="language" value="fr" class="language-option">Français</button>
+                    </form>
+                    <form action="{% url 'set_language' %}" method="post">
+                        {% csrf_token %}
+                        <input name="next" type="hidden" value="{{ request.path }}">
+                        <button type="submit" name="language" value="ar" class="language-option">العربية</button>
+                    </form>
+                    <form action="{% url 'set_language' %}" method="post">
+                        {% csrf_token %}
+                        <input name="next" type="hidden" value="{{ request.path }}">
+                        <button type="submit" name="language" value="ru" class="language-option">Русский</button>
+                    </form>
+                    <form action="{% url 'set_language' %}" method="post">
+                        {% csrf_token %}
+                        <input name="next" type="hidden" value="{{ request.path }}">
+                        <button type="submit" name="language" value="hi" class="language-option">हिंदी</button>
+                    </form>
+                    <form action="{% url 'set_language' %}" method="post">
+                        {% csrf_token %}
+                        <input name="next" type="hidden" value="{{ request.path }}">
+                        <button type="submit" name="language" value="ro" class="language-option">Română</button>
+                    </form>
+                    <form action="{% url 'set_language' %}" method="post">
+                        {% csrf_token %}
+                        <input name="next" type="hidden" value="{{ request.path }}">
+                        <button type="submit" name="language" value="uk" class="language-option">Українська</button>
+                    </form>
+                    <form action="{% url 'set_language' %}" method="post">
+                        {% csrf_token %}
+                        <input name="next" type="hidden" value="{{ request.path }}">
+                        <button type="submit" name="language" value="ur" class="language-option">اردو</button>
+                    </form>
+                    <form action="{% url 'set_language' %}" method="post">
+                        {% csrf_token %}
+                        <input name="next" type="hidden" value="{{ request.path }}">
+                        <button type="submit" name="language" value="zh-hans" class="language-option">中文 (简体)</button>
+                    </form>
+                    <form action="{% url 'set_language' %}" method="post">
+                        {% csrf_token %}
+                        <input name="next" type="hidden" value="{{ request.path }}">
+                        <button type="submit" name="language" value="bn" class="language-option">বাংলা</button>
+                    </form>
+                    <form action="{% url 'set_language' %}" method="post">
+                        {% csrf_token %}
+                        <input name="next" type="hidden" value="{{ request.path }}">
+                        <button type="submit" name="language" value="pt" class="language-option">Português</button>
+                    </form>
+                    <form action="{% url 'set_language' %}" method="post">
+                        {% csrf_token %}
+                        <input name="next" type="hidden" value="{{ request.path }}">
+                        <button type="submit" name="language" value="sq" class="language-option">Shqip</button>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Auth Links -->
+            <div class="navbar-links">
+                {% if user.is_authenticated %}
+                    <a href="{% url 'app:profile' %}">{% trans 'Perfil' %}</a>
+                    <a href="{% url 'app:logout' %}">{% trans 'Cerrar Sesión' %}</a>
+                {% else %}
+                    <a href="{% url 'app:login' %}">{% trans 'Iniciar Sesión' %}</a>
+                {% endif %}
+            </div>
+        </div>
+    </nav>
+
+    <!-- Messages -->
+    {% if messages %}
+    <div class="messages">
+        {% for message in messages %}
+        <div class="message {{ message.tags }}">
+            {{ message }}
+        </div>
+        {% endfor %}
+    </div>
+    {% endif %}
+
+    <!-- Main Container -->
+    <div class="main-container">
+        <!-- Main Content -->
+        <div class="content-wrapper">
+            {% block content %}{% endblock %}
+        </div>
+    </div>
+
+    <!-- Floating Social Buttons -->
+    <div class="social-floating">
+        {% for network in social_networks %}
+        <a href="{{ network.link }}" target="_blank" class="social-floating-btn" title="{{ network.name }}">
+            <img src="{{ network.image.url }}" alt="{{ network.name }}">
+        </a>
+        {% endfor %}
+    </div>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="footer-content">
+            <!-- Contact Info -->
+            <div class="footer-section">
+                <h4>{% trans 'Contacto' %}</h4>
+                {% if home_config %}
+                <p>📞 {{ home_config.contact_phone }}</p>
+                <p>📧 <a href="mailto:{{ home_config.contact_email }}">{{ home_config.contact_email }}</a></p>
+                {% endif %}
+            </div>
+
+            <!-- Contact Form -->
+            <div class="footer-section">
+                <h4>{% trans 'Envíanos un mensaje' %}</h4>
+                <form method="POST" action="{% url 'app:index' %}" class="contact-form">
+                    {% csrf_token %}
+                    <input type="text" name="contact_name" placeholder="{% trans 'Nombre' %}" required>
+                    <input type="email" name="contact_email" placeholder="{% trans 'Email' %}" required>
+                    <textarea name="contact_message" rows="3" placeholder="{% trans 'Mensaje' %}" required></textarea>
+                    <button type="submit">{% trans 'Enviar' %}</button>
+                </form>
+            </div>
+        </div>
+
+        <!-- Copyright -->
+        <div class="footer-copyright">
+            <p>&copy; {% now "Y" %} Legal Allies. {% trans 'Todos los derechos reservados.' %}</p>
+        </div>
+    </footer>
+
+    {% block extra_js %}{% endblock %}
+
+    <script>
+        // Auto-hide messages after 5 seconds
+        setTimeout(function() {
+            const messages = document.querySelector('.messages');
+            if (messages) {
+                messages.style.transition = 'opacity 0.5s';
+                messages.style.opacity = '0';
+                setTimeout(() => messages.remove(), 500);
+            }
+        }, 5000);
+
+        // Language dropdown toggle
+        function toggleLanguageDropdown() {
+            const dropdown = document.getElementById('languageDropdown');
+            dropdown.classList.toggle('show');
+        }
+
+        // Close dropdown when clicking outside
+        window.addEventListener('click', function(e) {
+            const dropdown = document.getElementById('languageDropdown');
+            const button = document.querySelector('.language-dropdown-btn');
+            
+            if (!button.contains(e.target) && !dropdown.contains(e.target)) {
+                dropdown.classList.remove('show');
+            }
+        });
+    </script>
+</body>
+</html>

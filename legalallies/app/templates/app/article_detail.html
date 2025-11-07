@@ -1,0 +1,418 @@
+{% extends 'app/base.html' %}
+{% load i18n %}
+
+{% block title %}{{ article.title }} - Legal Allies{% endblock %}
+
+{% block extra_css %}
+<style>
+    .article-container {
+        max-width: 1200px;
+        margin: 0 auto;
+    }
+
+    .article-layout {
+        display: grid;
+        grid-template-columns: 1fr 300px;
+        gap: 2rem;
+        align-items: start;
+    }
+
+    .article-main {
+        min-width: 0;
+    }
+
+    .breadcrumbs {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        margin-bottom: 2rem;
+        font-size: 1rem;
+        color: var(--text-gray);
+    }
+
+    .breadcrumbs a {
+        color: var(--primary-color);
+        text-decoration: none;
+        transition: text-decoration 0.2s;
+    }
+
+    .breadcrumbs a:hover {
+        text-decoration: underline;
+    }
+
+    .breadcrumbs .separator {
+        color: #999;
+    }
+
+    .article-header {
+        margin-bottom: 2rem;
+    }
+
+    .article-title {
+        color: var(--primary-color);
+        font-size: 2.5rem;
+        margin-bottom: 1rem;
+        line-height: 1.2;
+    }
+
+    .article-meta {
+        display: flex;
+        gap: 2rem;
+        color: var(--text-gray);
+        font-size: 0.95rem;
+        margin-bottom: 2rem;
+        flex-wrap: wrap;
+    }
+
+    .article-meta-item {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    .article-image {
+        width: 100%;
+        height: 400px;
+        object-fit: cover;
+        border-radius: 8px;
+        margin-bottom: 2rem;
+    }
+
+    .article-body {
+        font-size: 1.1rem;
+        line-height: 1.8;
+        color: var(--text-gray);
+        margin-bottom: 3rem;
+    }
+
+    .article-body h1, .article-body h2, .article-body h3 {
+        color: var(--primary-color);
+        margin-top: 2rem;
+        margin-bottom: 1rem;
+    }
+
+    .article-body p {
+        margin-bottom: 1rem;
+    }
+
+    .article-body ul, .article-body ol {
+        margin-left: 2rem;
+        margin-bottom: 1rem;
+    }
+
+    .article-body img {
+        max-width: 100%;
+        height: auto;
+        border-radius: 8px;
+        margin: 1rem 0;
+    }
+
+    /* Aside - Complementary Material */
+    .complementary-aside {
+        position: sticky;
+        top: 90px;
+        background: white;
+        border-radius: 8px;
+        padding: 1.5rem;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    }
+
+    .complementary-image-container {
+        position: relative;
+        width: 100%;
+        margin-bottom: 1.5rem;
+        border-radius: 8px;
+        overflow: hidden;
+    }
+
+    .complementary-main-image {
+        width: 100%;
+        height: auto;
+        display: block;
+    }
+
+    .complementary-title {
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        background: linear-gradient(transparent, rgba(106, 30, 170, 0.9));
+        color: var(--white);
+        font-size: 1.2rem;
+        margin: 0;
+        padding: 2rem 1rem 1rem;
+        text-align: center;
+    }
+
+    .complementary-body {
+        margin-bottom: 1rem;
+        font-size: 0.95rem;
+        line-height: 1.6;
+    }
+
+    .complementary-video {
+        width: 100%;
+        aspect-ratio: 16/9;
+        border-radius: 8px;
+        margin-bottom: 1rem;
+    }
+
+    .pdf-link {
+        display: inline-block;
+        background-color: var(--primary-color);
+        color: var(--white);
+        padding: 0.75rem 1.5rem;
+        border-radius: 4px;
+        text-decoration: none;
+        transition: all 0.3s;
+        width: 100%;
+        text-align: center;
+    }
+
+    .pdf-link:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(106, 30, 170, 0.3);
+    }
+
+    .related-articles {
+        margin-top: 3rem;
+        padding-top: 3rem;
+        border-top: 2px solid var(--border-gray);
+    }
+
+    .related-articles h3 {
+        color: var(--primary-color);
+        margin-bottom: 2rem;
+        font-size: 1.8rem;
+    }
+
+    .related-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        gap: 2rem;
+    }
+
+    .related-card {
+        background: white;
+        border-radius: 8px;
+        overflow: hidden;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        transition: transform 0.3s, box-shadow 0.3s;
+        text-decoration: none;
+        color: inherit;
+    }
+
+    .related-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 5px 15px rgba(106, 30, 170, 0.3);
+    }
+
+    .related-card-image {
+        width: 100%;
+        height: 180px;
+        object-fit: cover;
+    }
+
+    .related-card-content {
+        padding: 1.5rem;
+    }
+
+    .related-card-title {
+        color: var(--primary-color);
+        font-size: 1.1rem;
+        margin-bottom: 0.5rem;
+    }
+
+    .related-card-meta {
+        font-size: 0.85rem;
+        color: #666;
+    }
+
+    /* Back to Top Button */
+    .back-to-top {
+        position: fixed;
+        bottom: 30px;
+        right: 30px;
+        width: 50px;
+        height: 50px;
+        background-color: var(--primary-color);
+        color: var(--white);
+        border: none;
+        border-radius: 50%;
+        cursor: pointer;
+        font-size: 1.5rem;
+        display: none;
+        align-items: center;
+        justify-content: center;
+        box-shadow: 0 4px 12px rgba(106, 30, 170, 0.4);
+        transition: all 0.3s;
+        z-index: 998;
+    }
+
+    .back-to-top.show {
+        display: flex;
+    }
+
+    .back-to-top:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 6px 16px rgba(106, 30, 170, 0.5);
+    }
+
+    @media (max-width: 1024px) {
+        .article-layout {
+            grid-template-columns: 1fr;
+        }
+
+        .complementary-aside {
+            position: static;
+        }
+    }
+
+    @media (max-width: 768px) {
+        .article-title {
+            font-size: 1.8rem;
+        }
+
+        .article-image {
+            height: 250px;
+        }
+
+        .article-body {
+            font-size: 1rem;
+        }
+
+        .related-grid {
+            grid-template-columns: 1fr;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="article-container">
+    <!-- Breadcrumbs -->
+    <nav class="breadcrumbs">
+        <a href="{% url 'app:index' %}">{% trans 'Inicio' %}</a>
+        <span class="separator">/</span>
+        <a href="{% url 'app:category_articles' slug=article.category.slug %}">{{ article.category.name }}</a>
+    </nav>
+
+    <!-- Layout with Aside -->
+    <div class="article-layout">
+        <!-- Main Content -->
+        <div class="article-main">
+            <article>
+                <!-- Header -->
+                <div class="article-header">
+                    <h1 class="article-title">{{ article.title }}</h1>
+                    <div class="article-meta">
+                        <div class="article-meta-item">
+                            <strong>{% trans 'Autor:' %}</strong> {{ article.author.username }}
+                        </div>
+                        <div class="article-meta-item">
+                            <strong>{% trans 'Fecha:' %}</strong> {{ article.created_at|date:"d/m/Y" }}
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Image -->
+                {% if article.image %}
+                <img src="{{ article.image.url }}" alt="{{ article.title }}" class="article-image">
+                {% endif %}
+
+                <!-- Body -->
+                <div class="article-body">
+                    {{ article.body|safe }}
+                </div>
+            </article>
+
+            <!-- Related Articles -->
+            {% if related_articles %}
+            <section class="related-articles">
+                <h3>{% trans 'Artículos Relacionados' %}</h3>
+                <div class="related-grid">
+                    {% for related in related_articles %}
+                    <a href="{% url 'app:article_detail' slug=related.slug %}" class="related-card">
+                        {% if related.image %}
+                        <img src="{{ related.image.url }}" alt="{{ related.title }}" class="related-card-image">
+                        {% endif %}
+                        <div class="related-card-content">
+                            <h4 class="related-card-title">{{ related.title }}</h4>
+                            <p class="related-card-meta">{{ related.created_at|date:"d/m/Y" }}</p>
+                        </div>
+                    </a>
+                    {% endfor %}
+                </div>
+            </section>
+            {% endif %}
+        </div>
+
+        <!-- Aside - Complementary Material -->
+        {% if article.complementary_material %}
+        <aside class="complementary-aside">
+            <div class="complementary-image-container">
+                {% if article.complementary_material_image %}
+                <img src="{{ article.complementary_material_image.url }}" alt="{% trans 'Material Complementario' %}" class="complementary-main-image">
+                {% endif %}
+                <h3 class="complementary-title">{% trans 'Material Complementario' %}</h3>
+            </div>
+
+            {% if user.is_authenticated %}
+                <div class="complementary-body">
+                    {{ article.complementary_material.body|safe }}
+                </div>
+
+                {% if article.complementary_material.video %}
+                <iframe 
+                    src="{{ article.complementary_material.video }}" 
+                    class="complementary-video"
+                    frameborder="0" 
+                    allowfullscreen>
+                </iframe>
+                {% endif %}
+
+                {% if article.complementary_material.pdf %}
+                <a href="{{ article.complementary_material.pdf.url }}" target="_blank" class="pdf-link">
+                    📄 {% trans 'Descargar PDF' %}
+                </a>
+                {% endif %}
+            {% else %}
+                <div style="text-align: center; padding: 2rem 1rem;">
+                    <p style="margin-bottom: 1rem; color: var(--text-gray);">{% trans 'Inicia sesión para acceder al material complementario' %}</p>
+                    <a href="{% url 'app:login' %}?next={{ request.path }}" style="display: inline-block; background-color: var(--primary-color); color: var(--white); padding: 0.75rem 1.5rem; border-radius: 4px; text-decoration: none; transition: all 0.3s;" onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 4px 12px rgba(106, 30, 170, 0.3)'" onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='none'">
+                        🔒 {% trans 'Iniciar Sesión' %}
+                    </a>
+                </div>
+            {% endif %}
+        </aside>
+        {% endif %}
+    </div>
+</div>
+
+<!-- Back to Top Button -->
+<button class="back-to-top" id="backToTop" onclick="scrollToTop()" title="{% trans 'Volver arriba' %}">
+    ↑
+</button>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    // Show/hide back to top button based on scroll position
+    window.addEventListener('scroll', function() {
+        const backToTopButton = document.getElementById('backToTop');
+        if (window.pageYOffset > 300) {
+            backToTopButton.classList.add('show');
+        } else {
+            backToTopButton.classList.remove('show');
+        }
+    });
+
+    // Smooth scroll to top
+    function scrollToTop() {
+        window.scrollTo({
+            top: 0,
+            behavior: 'smooth'
+        });
+    }
+</script>
+{% endblock %}

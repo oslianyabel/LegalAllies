@@ -1,0 +1,242 @@
+{% extends 'app/base.html' %}
+{% load i18n %}
+
+{% block title %}{% trans 'Mi Perfil' %} - Legal Allies{% endblock %}
+
+{% block extra_css %}
+<style>
+    .profile-container {
+        max-width: 800px;
+        margin: 3rem auto;
+        padding: 2rem;
+    }
+
+    .profile-header {
+        background: linear-gradient(135deg, var(--primary-color), #8b3abf);
+        color: var(--white);
+        padding: 3rem 2rem;
+        border-radius: 8px 8px 0 0;
+        text-align: center;
+    }
+
+    .profile-avatar {
+        width: 100px;
+        height: 100px;
+        background-color: var(--white);
+        color: var(--primary-color);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 3rem;
+        font-weight: bold;
+        margin: 0 auto 1rem;
+        border: 4px solid var(--white);
+    }
+
+    .profile-name {
+        font-size: 2rem;
+        margin-bottom: 0.5rem;
+    }
+
+    .profile-email {
+        opacity: 0.9;
+        font-size: 1.1rem;
+    }
+
+    .profile-card {
+        background: white;
+        border-radius: 0 0 8px 8px;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        padding: 2rem;
+    }
+
+    .profile-section {
+        margin-bottom: 2rem;
+    }
+
+    .profile-section:last-child {
+        margin-bottom: 0;
+    }
+
+    .profile-section-title {
+        color: var(--primary-color);
+        font-size: 1.3rem;
+        margin-bottom: 1rem;
+        padding-bottom: 0.5rem;
+        border-bottom: 2px solid var(--light-gray);
+    }
+
+    .profile-info {
+        display: grid;
+        gap: 1rem;
+    }
+
+    .profile-info-item {
+        display: flex;
+        justify-content: space-between;
+        padding: 0.75rem;
+        background-color: var(--light-gray);
+        border-radius: 4px;
+    }
+
+    .profile-info-label {
+        font-weight: 600;
+        color: var(--text-gray);
+    }
+
+    .profile-info-value {
+        color: var(--text-gray);
+    }
+
+    .profile-actions {
+        display: grid;
+        gap: 1rem;
+        margin-top: 2rem;
+    }
+
+    .btn {
+        padding: 0.875rem 1.5rem;
+        border-radius: 4px;
+        text-decoration: none;
+        text-align: center;
+        font-weight: 600;
+        transition: opacity 0.3s;
+        border: none;
+        cursor: pointer;
+        font-size: 1rem;
+    }
+
+    .btn:hover {
+        opacity: 0.9;
+    }
+
+    .btn-primary {
+        background-color: var(--primary-color);
+        color: var(--white);
+    }
+
+    .btn-danger {
+        background-color: #dc3545;
+        color: var(--white);
+    }
+
+    .stats-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+        gap: 1rem;
+        margin-top: 1rem;
+    }
+
+    .stat-card {
+        background-color: var(--light-gray);
+        padding: 1.5rem;
+        border-radius: 8px;
+        text-align: center;
+    }
+
+    .stat-value {
+        font-size: 2rem;
+        font-weight: bold;
+        color: var(--primary-color);
+        margin-bottom: 0.5rem;
+    }
+
+    .stat-label {
+        color: var(--text-gray);
+        font-size: 0.9rem;
+    }
+
+    @media (max-width: 768px) {
+        .profile-container {
+            padding: 1rem;
+        }
+
+        .profile-header {
+            padding: 2rem 1rem;
+        }
+
+        .profile-name {
+            font-size: 1.5rem;
+        }
+
+        .profile-info-item {
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .stats-grid {
+            grid-template-columns: 1fr;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="profile-container">
+    <!-- Profile Header -->
+    <div class="profile-header">
+        <div class="profile-avatar">
+            {{ user.username|slice:":1"|upper }}
+        </div>
+        <h1 class="profile-name">{{ user.username }}</h1>
+        {% if user.email %}
+        <p class="profile-email">{{ user.email }}</p>
+        {% endif %}
+    </div>
+
+    <!-- Profile Card -->
+    <div class="profile-card">
+        <!-- Account Information -->
+        <section class="profile-section">
+            <h2 class="profile-section-title">{% trans 'Información de la Cuenta' %}</h2>
+            <div class="profile-info">
+                <div class="profile-info-item">
+                    <span class="profile-info-label">{% trans 'Nombre de Usuario:' %}</span>
+                    <span class="profile-info-value">{{ user.username }}</span>
+                </div>
+                <div class="profile-info-item">
+                    <span class="profile-info-label">{% trans 'Email:' %}</span>
+                    <span class="profile-info-value">{{ user.email|default:"No especificado" }}</span>
+                </div>
+                <div class="profile-info-item">
+                    <span class="profile-info-label">{% trans 'Miembro desde:' %}</span>
+                    <span class="profile-info-value">{{ user.date_joined|date:"d/m/Y" }}</span>
+                </div>
+                <div class="profile-info-item">
+                    <span class="profile-info-label">{% trans 'Último acceso:' %}</span>
+                    <span class="profile-info-value">{{ user.last_login|date:"d/m/Y H:i" }}</span>
+                </div>
+            </div>
+        </section>
+
+        <!-- Statistics -->
+        <section class="profile-section">
+            <h2 class="profile-section-title">{% trans 'Estadísticas' %}</h2>
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-value">{{ user.articles.count }}</div>
+                    <div class="stat-label">{% trans 'Artículos Publicados' %}</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value">{{ user.date_joined|timesince }}</div>
+                    <div class="stat-label">{% trans 'Tiempo en la plataforma' %}</div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Actions -->
+        <section class="profile-section">
+            <h2 class="profile-section-title">{% trans 'Acciones' %}</h2>
+            <div class="profile-actions">
+                <a href="{% url 'app:change_password' %}" class="btn btn-primary">
+                    🔒 {% trans 'Cambiar Contraseña' %}
+                </a>
+                <a href="{% url 'app:logout' %}" class="btn btn-danger">
+                    🚪 {% trans 'Cerrar Sesión' %}
+                </a>
+            </div>
+        </section>
+    </div>
+</div>
+{% endblock %}

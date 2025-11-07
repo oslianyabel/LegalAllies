@@ -1,0 +1,291 @@
+{% extends 'app/base.html' %}
+{% load i18n %}
+
+{% block title %}{% trans 'Inicio' %} - Legal Allies{% endblock %}
+
+{% block extra_css %}
+<style>
+    /* Hero Image */
+    .hero-section {
+        width: 100%;
+        height: 500px;
+        position: relative;
+        overflow: hidden;
+        margin-bottom: 3rem;
+    }
+
+    .hero-section img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+    }
+
+    .hero-overlay {
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        color: white;
+        text-align: center;
+        padding: 2rem;
+    }
+
+    .hero-overlay h1 {
+        font-size: 3rem;
+        margin-bottom: 1rem;
+        text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+    }
+
+    .hero-overlay p {
+        font-size: 1.3rem;
+        max-width: 800px;
+        text-shadow: 1px 1px 3px rgba(0,0,0,0.5);
+    }
+
+    /* Info Cards */
+    .info-cards {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+        gap: 2rem;
+        margin-bottom: 3rem;
+    }
+
+    .info-card {
+        background: white;
+        border: 2px solid var(--primary-color);
+        border-radius: 8px;
+        padding: 2rem;
+        text-align: center;
+        transition: transform 0.3s, box-shadow 0.3s;
+    }
+
+    .info-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 5px 15px rgba(106, 30, 170, 0.3);
+    }
+
+    .info-card-image {
+        width: 80px;
+        height: 80px;
+        margin: 0 auto 1rem;
+        object-fit: contain;
+    }
+
+    .info-card h3 {
+        color: var(--primary-color);
+        margin-bottom: 1rem;
+        font-size: 1.5rem;
+    }
+
+    .info-card p {
+        color: var(--text-gray);
+        line-height: 1.6;
+    }
+
+    /* Categories Section */
+    .categories-section {
+        margin-bottom: 3rem;
+    }
+
+    .categories-section h2 {
+        color: var(--primary-color);
+        text-align: center;
+        margin-bottom: 2rem;
+        font-size: 2rem;
+    }
+
+    .categories-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+        gap: 2rem;
+    }
+
+    .category-card {
+        background: white;
+        border-radius: 8px;
+        overflow: hidden;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        transition: transform 0.3s, box-shadow 0.3s;
+        text-decoration: none;
+        color: inherit;
+    }
+
+    .category-card:hover {
+        transform: translateY(-8px);
+        box-shadow: 0 5px 20px rgba(106, 30, 170, 0.3);
+    }
+
+    .category-card-image {
+        width: 100%;
+        height: 200px;
+        object-fit: cover;
+    }
+
+    .category-card-content {
+        padding: 1.5rem;
+        text-align: center;
+    }
+
+    .category-card-content h3 {
+        color: var(--primary-color);
+        font-size: 1.3rem;
+        margin: 0;
+    }
+
+    /* Banner Section */
+    .banner-section {
+        background-color: var(--light-gray);
+        border-radius: 8px;
+        padding: 3rem;
+        margin-bottom: 3rem;
+        display: flex;
+        gap: 2rem;
+        align-items: center;
+    }
+
+    .banner-image {
+        flex: 1;
+        max-width: 400px;
+    }
+
+    .banner-image img {
+        width: 100%;
+        height: auto;
+        border-radius: 8px;
+    }
+
+    .banner-content {
+        flex: 2;
+    }
+
+    .banner-content h2 {
+        color: var(--primary-color);
+        font-size: 2rem;
+        margin-bottom: 1rem;
+    }
+
+    .banner-content p {
+        font-size: 1.1rem;
+        line-height: 1.6;
+        color: var(--text-gray);
+    }
+
+    /* Responsive */
+    @media (max-width: 768px) {
+        .hero-overlay h1 {
+            font-size: 2rem;
+        }
+
+        .hero-overlay p {
+            font-size: 1rem;
+        }
+
+        .hero-section {
+            height: 300px;
+        }
+
+        .info-cards {
+            grid-template-columns: 1fr;
+        }
+
+        .categories-grid {
+            grid-template-columns: 1fr;
+        }
+
+        .banner-section {
+            flex-direction: column;
+            padding: 2rem;
+        }
+
+        .banner-image {
+            max-width: 100%;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<!-- Search Results -->
+{% if search_query %}
+<section class="search-results" style="margin-bottom: 2rem;">
+    <h2 style="color: var(--primary-color); margin-bottom: 1rem;">{% trans 'Resultados de búsqueda para' %}: "{{ search_query }}"</h2>
+    {% if search_results %}
+        <div style="display: flex; flex-direction: column; gap: 1rem;">
+            {% for article in search_results %}
+            <a href="{% url 'app:article_detail' slug=article.slug %}" style="text-decoration: none; color: inherit; padding: 1rem; border: 1px solid var(--border-gray); border-radius: 8px; transition: all 0.3s;" onmouseover="this.style.borderColor='var(--primary-color)'" onmouseout="this.style.borderColor='var(--border-gray)'">
+                <h3 style="color: var(--primary-color); margin-bottom: 0.5rem;">{{ article.title }}</h3>
+                <p style="color: var(--text-gray); font-size: 0.9rem;">{% trans 'Categoría:' %} {{ article.category.name }} | {% trans 'Autor:' %} {{ article.author.username }}</p>
+            </a>
+            {% endfor %}
+        </div>
+    {% else %}
+        <p>{% trans 'No se encontraron resultados para tu búsqueda.' %}</p>
+    {% endif %}
+</section>
+{% endif %}
+
+<!-- Hero Section -->
+{% if home_config %}
+<section class="hero-section">
+    {% if home_config.main_image %}
+    <img src="{{ home_config.main_image.url }}" alt="Legal Allies">
+    {% endif %}
+</section>
+
+<!-- Banner Section -->
+{% if home_config.banner_image %}
+<section class="banner-section">
+    <div class="banner-image">
+        <img src="{{ home_config.banner_image.url }}" alt="{{ home_config.banner_title }}">
+    </div>
+    <div class="banner-content">
+        <h2>{{ home_config.banner_title }}</h2>
+        <p>{{ home_config.banner_description }}</p>
+    </div>
+</section>
+{% endif %}
+
+<!-- Info Cards -->
+<div class="info-cards">
+    <div class="info-card">
+        {% if home_config.card1_svg %}
+        <img src="{{ home_config.card1_svg.url }}" alt="{{ home_config.card1_title }}" class="info-card-image">
+        {% endif %}
+        <h3>{{ home_config.card1_title }}</h3>
+        <p>{{ home_config.card1_description }}</p>
+    </div>
+
+    <div class="info-card">
+        {% if home_config.card2_svg %}
+        <img src="{{ home_config.card2_svg.url }}" alt="{{ home_config.card2_title }}" class="info-card-image">
+        {% endif %}
+        <h3>{{ home_config.card2_title }}</h3>
+        <p>{{ home_config.card2_description }}</p>
+    </div>
+</div>
+{% endif %}
+
+<!-- Categories Section -->
+<section class="categories-section">
+    <h2>{% trans 'Nuestros Servicios' %}</h2>
+    <div class="categories-grid">
+        {% for category in categories %}
+        <a href="{% url 'app:category_articles' slug=category.slug %}" class="category-card">
+            {% if category.image %}
+            <img src="{{ category.image.url }}" alt="{{ category.name }}" class="category-card-image">
+            {% endif %}
+            <div class="category-card-content">
+                <h3>{{ category.name }}</h3>
+            </div>
+        </a>
+        {% empty %}
+        <p>{% trans 'No hay categorías disponibles en este momento.' %}</p>
+        {% endfor %}
+    </div>
+</section>
+{% endblock %}

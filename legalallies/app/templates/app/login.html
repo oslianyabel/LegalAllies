@@ -1,0 +1,146 @@
+{% extends 'app/base.html' %}
+{% load i18n %}
+
+{% block title %}{% trans 'Iniciar Sesión' %} - Legal Allies{% endblock %}
+
+{% block extra_css %}
+<style>
+    .auth-container {
+        max-width: 450px;
+        margin: 3rem auto;
+        padding: 2rem;
+    }
+
+    .auth-card {
+        background: white;
+        border-radius: 8px;
+        padding: 3rem;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        border-top: 4px solid var(--primary-color);
+    }
+
+    .auth-title {
+        color: var(--primary-color);
+        font-size: 2rem;
+        margin-bottom: 0.5rem;
+        text-align: center;
+    }
+
+    .auth-subtitle {
+        color: var(--text-gray);
+        text-align: center;
+        margin-bottom: 2rem;
+    }
+
+    .form-group {
+        margin-bottom: 1.5rem;
+    }
+
+    .form-label {
+        display: block;
+        color: var(--text-gray);
+        font-weight: 500;
+        margin-bottom: 0.5rem;
+    }
+
+    .form-input {
+        width: 100%;
+        padding: 0.75rem;
+        border: 2px solid var(--border-gray);
+        border-radius: 4px;
+        font-size: 1rem;
+        transition: border-color 0.3s;
+    }
+
+    .form-input:focus {
+        outline: none;
+        border-color: var(--primary-color);
+    }
+
+    .btn-primary {
+        width: 100%;
+        padding: 0.875rem;
+        background-color: var(--primary-color);
+        color: var(--white);
+        border: none;
+        border-radius: 4px;
+        font-size: 1rem;
+        font-weight: 600;
+        cursor: pointer;
+        transition: opacity 0.3s;
+    }
+
+    .btn-primary:hover {
+        opacity: 0.9;
+    }
+
+    .auth-links {
+        margin-top: 2rem;
+        text-align: center;
+        padding-top: 1.5rem;
+        border-top: 1px solid var(--border-gray);
+    }
+
+    .auth-links a {
+        color: var(--primary-color);
+        text-decoration: none;
+        font-weight: 500;
+    }
+
+    .auth-links a:hover {
+        text-decoration: underline;
+    }
+
+    @media (max-width: 768px) {
+        .auth-container {
+            padding: 1rem;
+        }
+
+        .auth-card {
+            padding: 2rem 1.5rem;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="auth-container">
+    <div class="auth-card">
+        <h1 class="auth-title">{% trans 'Iniciar Sesión' %}</h1>
+        <p class="auth-subtitle">{% trans 'Accede a tu cuenta' %}</p>
+
+        <form method="POST">
+            {% csrf_token %}
+            
+            <div class="form-group">
+                <label for="username" class="form-label">{% trans 'Usuario' %}</label>
+                <input 
+                    type="text" 
+                    id="username" 
+                    name="username" 
+                    class="form-input" 
+                    required
+                    autofocus>
+            </div>
+
+            <div class="form-group">
+                <label for="password" class="form-label">{% trans 'Contraseña' %}</label>
+                <input 
+                    type="password" 
+                    id="password" 
+                    name="password" 
+                    class="form-input" 
+                    required>
+            </div>
+
+            <button type="submit" class="btn-primary">
+                {% trans 'Iniciar Sesión' %}
+            </button>
+        </form>
+
+        <div class="auth-links">
+            <p>{% trans '¿No tienes cuenta?' %} <a href="{% url 'app:register' %}">{% trans 'Regístrate aquí' %}</a></p>
+        </div>
+    </div>
+</div>
+{% endblock %}
